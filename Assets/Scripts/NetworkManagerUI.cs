@@ -8,22 +8,22 @@ public class NetworkManagerUI : MonoBehaviour{
     [SerializeField] private Button serverButton; //connect server button here
     [SerializeField] private Button hostButton; //connect host button here
     [SerializeField] private Button clientButton; //connect client button here
-    public static bool isConnected = false;
+    
     private void Awake()
     {
-        
+        GameObject emptyObject = GameObject.Find("NetworkManagerUI");
         // watch https://www.youtube.com/watch?v=3ZfwqWl-YI0&t=0s later to understand
         serverButton.onClick.AddListener(() => {
             NetworkManager.Singleton.StartServer();
-            isConnected = true;
+            emptyObject.SetActive(false);
         });
         hostButton.onClick.AddListener(() => {
             NetworkManager.Singleton.StartHost();
-            isConnected = true;
+            emptyObject.SetActive(false);
         });
         clientButton.onClick.AddListener(() => {
             NetworkManager.Singleton.StartClient();
-            isConnected = true;
+            emptyObject.SetActive(false);
         });
     }
 }
