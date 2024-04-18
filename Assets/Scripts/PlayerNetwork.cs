@@ -16,6 +16,7 @@ public class PlayerNetwork : NetworkBehaviour
     [SerializeField] private Transform spawnerPrefab;
     [SerializeField] private GameObject cameraPrefab;
     private Transform player;
+    private Vector3 cameraOffset = new Vector3(0, 1, 0);
 
     public override void OnNetworkSpawn() {
         menuCamera = GameObject.FindGameObjectWithTag("MainCamera");
@@ -24,24 +25,27 @@ public class PlayerNetwork : NetworkBehaviour
             menuCamera.SetActive(false);
         }
 
-        /*cameras = GameObject.FindGameObjectsWithTag("PlayerCamera");
+        camera = GameObject.FindGameObjectWithTag("PlayerCamera");
         //cameras[OwnerClientId].SetActive(true);
-        int i;
+        /*int i;
         for ( i = 0; i < cameras.Length; i++)
         {
-            
+            //if (IsOwner)
             if (i != (int)OwnerClientId)
             {
-                cameras[i].SetActive(false);
+                //cameras[i].SetActive(false);
             } else
             {
                 camera = cameras[i];
             }
         }*/
-        camera = Instantiate(cameraPrefab);
-
-        //camera.SetActive(true);
-        //camera.transform.localPosition += new Vector3(0,1,0);
+        //camera = Instantiate(cameraPrefab);
+        
+            if (IsOwner)
+            {
+                camera.SetActive(true);
+            }
+        camera.transform.localPosition += new Vector3(0,0,0);
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         rb = GetComponent<Rigidbody>();
@@ -55,24 +59,29 @@ public class PlayerNetwork : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+
         //Debug.Log(OwnerClientId + "; " + randomNumber.Value);
-        if (!IsOwner) return;
+
+        
+            if (!IsOwner) return;
+        
 
         if (Input.GetKeyDown(KeyCode.T))
-        {
-            randomNumber.Value = Random.Range(0, 10);
-        }
+            {
+                randomNumber.Value = Random.Range(0, 10);
+            }
 
-        /*Vector3 moveDir = new Vector3(0, 0, 0);
-        if (Input.GetKey(KeyCode.W)) moveDir.z = +1f;
-        if (Input.GetKey(KeyCode.S)) moveDir.z = -1f;
-        if (Input.GetKey(KeyCode.A)) moveDir.x = -1f;
-        if (Input.GetKey(KeyCode.D)) moveDir.x = +1f;
 
-        float moveSpeed = 3f;
-        transform.position += moveDir * moveSpeed * Time.deltaTime;*/
-        //vector = Quaternion.AngleAxis(-45, Vector3.up) * vector;
-        Vector3 sideMovement = transform.forward;
+            /*Vector3 moveDir = new Vector3(0, 0, 0);
+            if (Input.GetKey(KeyCode.W)) moveDir.z = +1f;
+            if (Input.GetKey(KeyCode.S)) moveDir.z = -1f;
+            if (Input.GetKey(KeyCode.A)) moveDir.x = -1f;
+            if (Input.GetKey(KeyCode.D)) moveDir.x = +1f;
+
+            float moveSpeed = 3f;
+            transform.position += moveDir * moveSpeed * Time.deltaTime;*/
+                //vector = Quaternion.AngleAxis(-45, Vector3.up) * vector;
+                Vector3 sideMovement = transform.forward;
         sideMovement = Quaternion.AngleAxis(-90, Vector3.up) * sideMovement;
         float moveSpeed = 3f;
         if (Input.GetKey(KeyCode.W)) rb.velocity = transform.forward * moveSpeed;
@@ -80,9 +89,10 @@ public class PlayerNetwork : NetworkBehaviour
         if (Input.GetKey(KeyCode.A)) rb.velocity = sideMovement * moveSpeed;
         if (Input.GetKey(KeyCode.D)) rb.velocity = sideMovement * -moveSpeed;
 
+        camera.transform.position = this.transform.position + cameraOffset;
         rotation.y += Input.GetAxis("Mouse X");
         transform.eulerAngles = (Vector2)rotation * lookSpeed;
-        /*cameraRotation.x += -Input.GetAxis("Mouse Y");
+        cameraRotation.x += -Input.GetAxis("Mouse Y");
         if (cameraRotation.x > 90)
         {
             cameraRotation.x = 90;
@@ -95,7 +105,7 @@ public class PlayerNetwork : NetworkBehaviour
 
         }
         cameraRotation.y = rotation.y;
-        camera.transform.eulerAngles = (Vector2)cameraRotation * lookSpeed;*/
+        camera.transform.eulerAngles = (Vector2)cameraRotation * lookSpeed;
 
     }
 }

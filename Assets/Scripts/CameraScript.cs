@@ -9,14 +9,15 @@ public class CameraScript : NetworkBehaviour
     private GameObject camera;
     private GameObject[] players;
     private Vector3 cameraRotation;
+    private Vector3 cameraOffset = new Vector3 (0, 1, 0);
     // Start is called before the first frame update
     void Start()
     {
-        camera = GameObject.FindGameObjectWithTag("PlayerCamera");
+        camera = this.gameObject;
         players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject j in players)
         {
-            if (IsLocalPlayer)
+            if (IsOwner)
             {
                 player = j;
             }
@@ -26,20 +27,31 @@ public class CameraScript : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        camera.transform.position = player.transform.position;
-        cameraRotation.x += -Input.GetAxis("Mouse Y");
-        if (cameraRotation.x > 90)
+        players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject j in players)
         {
-            cameraRotation.x = 90;
+            if (IsOwner)
+            {
+                player = j;
+            }
         }
-        if (cameraRotation.x < -90)
+        if (player != null)
         {
-            cameraRotation.x = -90;
-        }
-        {
+            camera.transform.position = player.transform.position + cameraOffset;
+            cameraRotation.x += -Input.GetAxis("Mouse Y");
+            if (cameraRotation.x > 90)
+            {
+                cameraRotation.x = 90;
+            }
+            if (cameraRotation.x < -90)
+            {
+                cameraRotation.x = -90;
+            }
+            {
 
+            }
+            cameraRotation.y += Input.GetAxis("Mouse X");
+            camera.transform.eulerAngles = (Vector2)cameraRotation * 1;
         }
-        cameraRotation.y +=Input.GetAxis("Mouse X");
-        camera.transform.eulerAngles = (Vector2)cameraRotation * 1;
     }
 }
