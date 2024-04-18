@@ -84,6 +84,7 @@ public class PlayerNetwork : NetworkBehaviour
                 Vector3 sideMovement = transform.forward;
         sideMovement = Quaternion.AngleAxis(-90, Vector3.up) * sideMovement;
         float moveSpeed = 3f;
+        
         if (Input.GetKey(KeyCode.W)) rb.velocity = transform.forward * moveSpeed;
         if (Input.GetKey(KeyCode.S)) rb.velocity = transform.forward * -moveSpeed;
         if (Input.GetKey(KeyCode.A)) rb.velocity = sideMovement * moveSpeed;
