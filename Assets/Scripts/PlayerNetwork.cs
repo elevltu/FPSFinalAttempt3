@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -13,8 +14,16 @@ public class PlayerNetwork : NetworkBehaviour
     [SerializeField]private GameObject[] cameras;
     private GameObject menuCamera;
     private Rigidbody rb;
+
     [SerializeField] private Transform spawnerPrefab;
     [SerializeField] private GameObject cameraPrefab;
+    [SerializeField] private Transform bulletPrefab;
+
+    private int health;
+    private float shootCooldown;
+    private bool isOnCooldown;
+    private bool cooldownRunning;
+
     private Transform player;
     private Vector3 cameraOffset = new Vector3(0, 1, 0);
 
@@ -54,7 +63,10 @@ public class PlayerNetwork : NetworkBehaviour
             Transform spawnedObjectTransform = Instantiate(spawnerPrefab);
             spawnedObjectTransform.GetComponent<NetworkObject>().Spawn(true);
         }
-        
+        isOnCooldown = false;
+        cooldownRunning = false;
+        health = 100;
+        shootCooldown = 1500;
     }
     // Update is called once per frame
     void Update()
@@ -108,5 +120,19 @@ public class PlayerNetwork : NetworkBehaviour
         cameraRotation.y = rotation.y;
         camera.transform.eulerAngles = (Vector2)cameraRotation * lookSpeed;
 
+        if (Input.GetMouseButton(0))
+        {
+            Transform spawnedObjectTransform = Instantiate(bulletPrefab);
+            spawnedObjectTransform.GetComponent<NetworkObject>().Spawn(true);
+            isOnCooldown = true;
+            onCooldown();
+        }
+    }
+    async void onCooldown()
+    {
+        if (cooldownRunning) return; cooldownRunning = true;
+        await Task.Delay((int)shootCooldown);
+        cooldownRunning = false;
+        isOnCooldown = false;
     }
 }
