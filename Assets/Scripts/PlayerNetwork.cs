@@ -23,6 +23,7 @@ public class PlayerNetwork : NetworkBehaviour
     private float shootCooldown;
     private bool isOnCooldown;
     private bool cooldownRunning;
+    private float damage;
 
     private Transform player;
     private Vector3 cameraOffset = new Vector3(0, 1, 0);
@@ -67,6 +68,7 @@ public class PlayerNetwork : NetworkBehaviour
         cooldownRunning = false;
         health = 100;
         shootCooldown = 1500;
+        damage = 50;
     }
     // Update is called once per frame
     void Update()
@@ -96,11 +98,14 @@ public class PlayerNetwork : NetworkBehaviour
                 Vector3 sideMovement = transform.forward;
         sideMovement = Quaternion.AngleAxis(-90, Vector3.up) * sideMovement;
         float moveSpeed = 3f;
+        Vector3 movementVector = new Vector3(0, 0, 0);
         
-        if (Input.GetKey(KeyCode.W)) rb.velocity = transform.forward * moveSpeed;
-        if (Input.GetKey(KeyCode.S)) rb.velocity = transform.forward * -moveSpeed;
-        if (Input.GetKey(KeyCode.A)) rb.velocity = sideMovement * moveSpeed;
-        if (Input.GetKey(KeyCode.D)) rb.velocity = sideMovement * -moveSpeed;
+        if (Input.GetKey(KeyCode.W)) movementVector += transform.forward * moveSpeed;
+        if (Input.GetKey(KeyCode.S)) movementVector += transform.forward * -moveSpeed;
+        if (Input.GetKey(KeyCode.A)) movementVector += sideMovement * moveSpeed;
+        if (Input.GetKey(KeyCode.D)) movementVector += sideMovement * -moveSpeed;
+
+        rb.velocity = movementVector;
 
         camera.transform.position = this.transform.position + cameraOffset;
         rotation.y += Input.GetAxis("Mouse X");
@@ -120,10 +125,12 @@ public class PlayerNetwork : NetworkBehaviour
         cameraRotation.y = rotation.y;
         camera.transform.eulerAngles = (Vector2)cameraRotation * lookSpeed;
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && !isOnCooldown)
         {
-            Transform spawnedObjectTransform = Instantiate(bulletPrefab);
+            Transform spawnedObjectTransform = Instantiate(bulletPrefab, rb.position, Quaternion.Euler(new Vector3(rb.rotation.x, rb.rotation.y, rb.rotation.z)));
             spawnedObjectTransform.GetComponent<NetworkObject>().Spawn(true);
+            spawnedObjectTransform.GetComponent<BulletScript>().setDamage(damage);
+            spawnedObjectTransform.GetComponent<Rigidbody>().velocity = rb.transform.forward * 20;
             isOnCooldown = true;
             onCooldown();
         }
