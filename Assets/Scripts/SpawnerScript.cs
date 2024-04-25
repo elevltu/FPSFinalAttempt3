@@ -24,6 +24,7 @@ public class SpawnerScript : NetworkBehaviour
             spawnedObjectTransform = Instantiate(spawnedObjectPrefab);
             spawnedObjectTransform.GetComponent<NetworkObject>().Spawn(true);
             canSpawn = false;
+            
             canSpawnEnemies();
         }
     }

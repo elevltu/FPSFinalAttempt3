@@ -23,7 +23,11 @@ public class PlayerNetwork : NetworkBehaviour
     private float shootCooldown;
     private bool isOnCooldown;
     private bool cooldownRunning;
+    private Vector3 moveDirection = new Vector3 (0, 0, 0);
     private float damage;
+
+    private bool isInvincible;
+    private bool isOnInvincible;
 
     private Transform player;
     private Vector3 cameraOffset = new Vector3(0, 1, 0);
@@ -67,7 +71,8 @@ public class PlayerNetwork : NetworkBehaviour
         isOnCooldown = false;
         cooldownRunning = false;
         health = 100;
-        shootCooldown = 1500;
+        shootCooldown = 1100;
+        player = gameObject.GetComponent<Transform>();
         damage = 50;
     }
     // Update is called once per frame
@@ -98,8 +103,9 @@ public class PlayerNetwork : NetworkBehaviour
                 Vector3 sideMovement = transform.forward;
         sideMovement = Quaternion.AngleAxis(-90, Vector3.up) * sideMovement;
         float moveSpeed = 3f;
+
         Vector3 movementVector = new Vector3(0, 0, 0);
-        
+
         if (Input.GetKey(KeyCode.W)) movementVector += transform.forward * moveSpeed;
         if (Input.GetKey(KeyCode.S)) movementVector += transform.forward * -moveSpeed;
         if (Input.GetKey(KeyCode.A)) movementVector += sideMovement * moveSpeed;
@@ -134,6 +140,12 @@ public class PlayerNetwork : NetworkBehaviour
             isOnCooldown = true;
             onCooldown();
         }
+        
+        if (health <= 0)
+        {
+            camera.GetComponent<CameraScript>().playerDead = true;
+            Destroy(player);
+        }
     }
     async void onCooldown()
     {
@@ -141,5 +153,24 @@ public class PlayerNetwork : NetworkBehaviour
         await Task.Delay((int)shootCooldown);
         cooldownRunning = false;
         isOnCooldown = false;
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.tag.Equals("Enemy") && !isInvincible)
+        {
+            health -= 10;
+            isInvincible = true;
+            invincibilityFrames();
+        }
+    }
+    async void invincibilityFrames()
+    {
+        if (!isOnInvincible)
+        {
+            isOnInvincible = true;
+            await Task.Delay(500);
+            isOnInvincible = false;
+            isInvincible = false;
+        }
     }
 }

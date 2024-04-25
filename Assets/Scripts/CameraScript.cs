@@ -10,9 +10,13 @@ public class CameraScript : NetworkBehaviour
     private GameObject[] players;
     private Vector3 cameraRotation;
     private Vector3 cameraOffset = new Vector3 (0, 1, 0);
+    private Vector3 originalPosition;
+    public bool playerDead;
     // Start is called before the first frame update
     void Start()
     {
+        originalPosition = transform.position;
+        playerDead = false;
         camera = this.gameObject;
         players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject j in players)

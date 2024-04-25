@@ -42,7 +42,7 @@ public class EnemyScript : NetworkBehaviour
         movementDirection.Normalize();
         movementDirection *= (speed * Time.deltaTime);
         rb.position += movementDirection;
-        Debug.Log(movementDirection);
+        
     }
     private void OnTriggerEnter(UnityEngine.Collider other)
     {
