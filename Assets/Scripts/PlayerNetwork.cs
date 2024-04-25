@@ -38,7 +38,7 @@ public class PlayerNetwork : NetworkBehaviour
         {
             menuCamera.SetActive(false);
         }
-
+        
         camera = GameObject.FindGameObjectWithTag("PlayerCamera");
         //cameras[OwnerClientId].SetActive(true);
         /*int i;
@@ -63,7 +63,7 @@ public class PlayerNetwork : NetworkBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         rb = GetComponent<Rigidbody>();
-        if (IsServer || IsHost)
+        if ((IsServer || IsHost) && GameObject.FindGameObjectWithTag("Spawner") == null)
         {
             Transform spawnedObjectTransform = Instantiate(spawnerPrefab);
             spawnedObjectTransform.GetComponent<NetworkObject>().Spawn(true);
@@ -74,6 +74,7 @@ public class PlayerNetwork : NetworkBehaviour
         shootCooldown = 1100;
         player = gameObject.GetComponent<Transform>();
         damage = 50;
+        isInvincible = false; isOnInvincible = false;
     }
     // Update is called once per frame
     void Update()
@@ -144,7 +145,7 @@ public class PlayerNetwork : NetworkBehaviour
         if (health <= 0)
         {
             camera.GetComponent<CameraScript>().playerDead = true;
-            Destroy(player);
+            Destroy(player.gameObject);
         }
     }
     async void onCooldown()
@@ -156,8 +157,10 @@ public class PlayerNetwork : NetworkBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.tag.Equals("Enemy") && !isInvincible)
+        Debug.Log(collision.collider.tag);
+        if (collision.collider.tag == "Enemy" && !isInvincible)
         {
+            Debug.Log("ouch");
             health -= 10;
             isInvincible = true;
             invincibilityFrames();

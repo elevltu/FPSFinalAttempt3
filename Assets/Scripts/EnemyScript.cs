@@ -24,13 +24,18 @@ public class EnemyScript : NetworkBehaviour
         canBeHurt = true;
         isRunning = false;
         player = GameObject.FindWithTag(tag: "Player");
-        print(player);
+        
+        
         rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (player == null)
+        {
+            Destroy(gameObject);
+        }
         if (health <= 0)
         {
             Destroy(gameObject);
@@ -42,7 +47,11 @@ public class EnemyScript : NetworkBehaviour
         movementDirection.Normalize();
         movementDirection *= (speed * Time.deltaTime);
         rb.position += movementDirection;
-        
+
+        transform.LookAt(player.transform.position);
+        transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+
+
     }
     private void OnTriggerEnter(UnityEngine.Collider other)
     {
