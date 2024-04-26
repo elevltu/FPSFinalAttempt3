@@ -76,6 +76,9 @@ MonoBehaviour:
   spawnerPrefab: {fileID: 6003357031312980082, guid: 465a3fffc6d8f13469b61e4b480d6fc8, type: 3}
   cameraPrefab: {fileID: 1303539392398121466, guid: 5b3793a2ed097dc46baa1eec9c41911a, type: 3}
   bulletPrefab: {fileID: 4098601540377424172, guid: b11a008d21bc3e448a4840d0d275dfab, type: 3}
+  endCanvas: {fileID: 920125098054951081, guid: 6832592c40179af4889e25a0bba7a89d, type: 3}
+  mainCanvas: {fileID: 8612540190067619707, guid: 2c9225133624f39478fae29dd6948738, type: 3}
+  health: 0
 --- !u!54 &4378633268559013962
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -19,7 +19,10 @@ public class PlayerNetwork : NetworkBehaviour
     [SerializeField] private GameObject cameraPrefab;
     [SerializeField] private Transform bulletPrefab;
 
-    private int health;
+    public GameObject endCanvas;
+    public GameObject mainCanvas;
+
+    public int health;
     private float shootCooldown;
     private bool isOnCooldown;
     private bool cooldownRunning;
@@ -40,6 +43,9 @@ public class PlayerNetwork : NetworkBehaviour
         }
         
         camera = GameObject.FindGameObjectWithTag("PlayerCamera");
+
+        //endCanvas = GameObject.FindGameObjectWithTag("EndUI");
+       // mainCanvas = GameObject.FindGameObjectWithTag("MainUI");
         //cameras[OwnerClientId].SetActive(true);
         /*int i;
         for ( i = 0; i < cameras.Length; i++)
@@ -71,10 +77,14 @@ public class PlayerNetwork : NetworkBehaviour
         isOnCooldown = false;
         cooldownRunning = false;
         health = 100;
-        shootCooldown = 1100;
+        shootCooldown = 1700;
         player = gameObject.GetComponent<Transform>();
         damage = 50;
         isInvincible = false; isOnInvincible = false;
+        mainCanvas = Instantiate(mainCanvas);
+        endCanvas = Instantiate(endCanvas);
+        mainCanvas.SetActive(true);
+        endCanvas.SetActive(false);
     }
     // Update is called once per frame
     void Update()
@@ -141,11 +151,33 @@ public class PlayerNetwork : NetworkBehaviour
             isOnCooldown = true;
             onCooldown();
         }
-        
+
         if (health <= 0)
         {
             camera.GetComponent<CameraScript>().playerDead = true;
+            endCanvas.SetActive(true);
+            mainCanvas.SetActive(false);
+            endCanvas.GetComponent<EndCanvasScript>().onPlayerDie();
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
             Destroy(player.gameObject);
+        }
+        else if (health <= 1)
+        {
+            damage = 1000;
+            shootCooldown = 50;
+        } else if (health <= 10)
+        {
+            damage = 200;
+            shootCooldown = 200;
+        } else if (health < 25)
+        {
+            damage = 100;
+            shootCooldown = 500;
+        } else if (health <= 50)
+        {
+            damage = 75;
+            shootCooldown = 1000;
         }
     }
     async void onCooldown()
@@ -157,10 +189,8 @@ public class PlayerNetwork : NetworkBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log(collision.collider.tag);
         if (collision.collider.tag == "Enemy" && !isInvincible)
         {
-            Debug.Log("ouch");
             health -= 10;
             isInvincible = true;
             invincibilityFrames();

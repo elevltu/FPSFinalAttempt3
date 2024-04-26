@@ -40,7 +40,7 @@ public class EnemyScript : NetworkBehaviour
         {
             Destroy(gameObject);
         }
-
+        if (player == null) return;
         playerX = player.transform.position.x;
         playerZ = player.transform.position.z;
         movementDirection = new Vector3(playerX - rb.position.x, 0, playerZ - rb.position.z);
@@ -59,7 +59,6 @@ public class EnemyScript : NetworkBehaviour
         {
             health -= other.gameObject.GetComponent<BulletScript>().damage;
             Destroy(other.gameObject);
-            Debug.Log("HELP");
             canBeHurt = false;
             invincibilityFrames();
         }

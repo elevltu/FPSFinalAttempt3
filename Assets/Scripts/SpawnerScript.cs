@@ -25,20 +25,17 @@ public class SpawnerScript : NetworkBehaviour
     {
         if (canSpawn)
         {
-            spawnedObjectTransform = Instantiate(spawnedObjectPrefab, spawnLocation, Quaternion.Euler(0,0,0));
-            spawnedObjectTransform.GetComponent<NetworkObject>().Spawn(true);
-            canSpawn = false;
-
+            if (player == null) return;
             spawnLocation = new Vector3(Random.RandomRange(-25, 25), 0, Random.RandomRange(-25, 25));
             float distance = Mathf.Sqrt((spawnLocation.x - player.transform.position.x) * (spawnLocation.x - player.transform.position.x) + (spawnLocation.y - player.transform.position.y) * (spawnLocation.y - player.transform.position.y));
-            Debug.Log(distance);
             while (distance < 10)
             {
                 spawnLocation = new Vector3(Random.RandomRange(-25, 25), 0, Random.RandomRange(-25, 25));
                 distance = Mathf.Sqrt((spawnLocation.x - player.transform.position.x) * (spawnLocation.x - player.transform.position.x) + (spawnLocation.y - player.transform.position.y) * (spawnLocation.y - player.transform.position.y));
-                Debug.Log(distance);
             }
-
+            spawnedObjectTransform = Instantiate(spawnedObjectPrefab, spawnLocation, Quaternion.Euler(0, 0, 0));
+            spawnedObjectTransform.GetComponent<NetworkObject>().Spawn(true);
+            canSpawn = false;
             canSpawnEnemies();
         }
     }

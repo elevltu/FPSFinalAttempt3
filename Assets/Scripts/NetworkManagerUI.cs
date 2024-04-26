@@ -9,6 +9,7 @@ public class NetworkManagerUI : MonoBehaviour{
     [SerializeField] private Button hostButton; //connect host button here
     [SerializeField] private Button clientButton; //connect client button here
     
+    
     private void Awake()
     {
         GameObject emptyObject = GameObject.Find("NetworkManagerUI");
@@ -18,6 +19,10 @@ public class NetworkManagerUI : MonoBehaviour{
             emptyObject.SetActive(false);
         });
         hostButton.onClick.AddListener(() => {
+            if (NetworkManager.Singleton.IsHost)
+            {
+                NetworkManager.Singleton.DisconnectClient(NetworkManager.ServerClientId);
+            }
             NetworkManager.Singleton.StartHost();
             emptyObject.SetActive(false);
         });

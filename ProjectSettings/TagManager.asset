@@ -8,6 +8,8 @@ TagManager:
   - Bullet
   - Enemy
   - Spawner
+  - MainUI
+  - EndUI
   layers:
   - Default
   - TransparentFX
